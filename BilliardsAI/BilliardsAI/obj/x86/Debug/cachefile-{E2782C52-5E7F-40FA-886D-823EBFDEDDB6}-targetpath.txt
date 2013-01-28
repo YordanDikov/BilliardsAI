@@ -1,3 +1,0 @@
-Content\OneBall.xnb
-Content\Pixel.xnb
-Content\Tahoma.xnb
