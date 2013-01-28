@@ -1,0 +1,4 @@
+C:\Users\Dikov\Desktop\BilliardsAI\BilliardsAI\BilliardsAIContent\obj\x86\Debug\BilliardsAIContent.contentprojResolveAssemblyReference.cache
+C:\Users\EnikA\Desktop\BilliardsAI\BilliardsAI\BilliardsAIContent\obj\x86\Debug\BilliardsAIContent.contentprojResolveAssemblyReference.cache
+C:\Users\EnikA\Desktop\BilliardsAI2\BilliardsAI\BilliardsAI\BilliardsAIContent\obj\x86\Debug\BilliardsAIContent.contentprojResolveAssemblyReference.cache
+C:\Users\Dikov\Desktop\BilliardsAI2\BilliardsAI\BilliardsAI\BilliardsAIContent\obj\x86\Debug\BilliardsAIContent.contentprojResolveAssemblyReference.cache
