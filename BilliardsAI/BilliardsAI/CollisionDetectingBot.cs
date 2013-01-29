@@ -24,13 +24,17 @@ namespace BilliardsAI
                 }
                 if (HasCollisionWithBall(whiteBall, target, loopBall))
                 {
+                    if (target.Number < 8 && loopBall.Number < 8 ||
+                        target.Number > 8 && loopBall.Number > 8)
+                    {
+                        // Sample case: Target is red, loop bal is also red, closer to the white.
+                        // The loop ball is covered by a yellow ball, however, the target ball is covered only by the loop ball
+                        // In this case a shot to the target ball should be performed. Although it will hit the loop ball, this 
+                        // will still not count as foul.
+                        continue;
+                    }
                     return true;
                 }
-            }
-            
-            if (HasCollisionWithBall(whiteBall, target, pool.Balls[8]))
-            {
-                return true;
             }
             return false;
         }
@@ -38,17 +42,11 @@ namespace BilliardsAI
         private bool HasCollisionWithBall(Ball whiteBall, Ball targetBall, Ball possibleObstruction)
         {
             double time;
-            // the white ball needs to be initialized, as if shot, so that the calculations can be performed
-            //whiteBall.Speed = 500;
-            //whiteBall.Dir = targetBall.Center - whiteBall.Center;
             Vector2 whiteBallDirection = targetBall.Center - whiteBall.Center;
             whiteBallDirection.Normalize();
 
             bool result = Physics.DoesBallCollideWithOtherBall(whiteBall, possibleObstruction, out time, 
                                 whiteBallDirection, Vector2.Zero,500,0);
-            // revert the state of the white ball to the default value
-            //whiteBall.Speed = 0;
-            //whiteBall.Dir = Vector2.Zero;
             return result;
         }
 
@@ -100,7 +98,6 @@ namespace BilliardsAI
             if (player.BallTypeChosen == BallType.None)
             {
                 return base.GetClosestBallCenter();
-                //result = ChooseClosestBallFromRange(whiteBall, 1, 16);
             }
             else if (player.BallTypeChosen == BallType.Solids)
             {
