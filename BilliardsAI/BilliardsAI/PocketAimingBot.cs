@@ -14,7 +14,7 @@ namespace BilliardsAI
         {
             //a * b = |a| * |b| * cos alpha
             Vector2 a = target - whiteBall;
-            Vector2 b = pocket - target;
+            Vector2 b = target - pocket;
             float cosAngle = Vector2.Dot(a,b) / (a.Length() * b.Length());
             return cosAngle;
         }
