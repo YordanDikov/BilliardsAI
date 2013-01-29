@@ -13,46 +13,43 @@ namespace BilliardsAI
         {
             for (int i = rangeStart; i < rangeEnd; i++)
             {
-                if (HasCollisionWithBall2(whiteBall, target, pool.Balls[i]))
+                Ball loopBall = pool.Balls[i];
+                if (loopBall.Inserted)
+                {
+                    continue;
+                }
+                if (loopBall.Number == target.Number)
+                {
+                    continue;
+                }
+                if (HasCollisionWithBall(whiteBall, target, loopBall))
                 {
                     return true;
                 }
             }
             
-            if (HasCollisionWithBall2(whiteBall, target, pool.Balls[8]))
+            if (HasCollisionWithBall(whiteBall, target, pool.Balls[8]))
             {
                 return true;
             }
             return false;
         }
 
-        private bool HasCollisionWithBall2(Ball whiteBall, Ball targetBall, Ball possibleObstruction)
+        private bool HasCollisionWithBall(Ball whiteBall, Ball targetBall, Ball possibleObstruction)
         {
-            Vector2 shootDir = targetBall.Center - whiteBall.Center;               //AB
-            //Vector2 whiteToObs = possibleObstruction.Center - whiteBall.Center;  //AC
+            double time;
+            // the white ball needs to be initialized, as if shot, so that the calculations can be performed
+            //whiteBall.Speed = 500;
+            //whiteBall.Dir = targetBall.Center - whiteBall.Center;
+            Vector2 whiteBallDirection = targetBall.Center - whiteBall.Center;
+            whiteBallDirection.Normalize();
 
-            //float result = Math.Abs(Utilities.Cross(shootDir,whiteToObs)) / (float)Math.Sqrt(Vector2.Dot(shootDir,shootDir));
-            
-            //return result <= 2*Ball.Radius;
-            float l2 = Vector2.DistanceSquared(targetBall.Center, whiteBall.Center);  // i.e. |w-v|^2 -  avoid a sqrt
-            //if (l2 == 0.0) return distance(p, v);   // v == w case
-            // Consider the line extending the segment, parameterized as v + t (w - v).
-            // We find projection of point p onto the line. 
-            // It falls where t = [(p-v) . (w-v)] / |w-v|^2
-            float t = Vector2.Dot(possibleObstruction.Center - whiteBall.Center, targetBall.Center - whiteBall.Center) / l2;
-            float distance;
-            if (t < 0.0)
-            {
-                distance = Vector2.Distance(possibleObstruction.Center, whiteBall.Center);       // Beyond the 'v' end of the segment
-            }
-            else if (t > 1.0)
-            {
-                distance = Vector2.Distance(possibleObstruction.Center, targetBall.Center);  // Beyond the 'w' end of the segment
-            }
-            Vector2 projection = whiteBall.Center + t * (targetBall.Center - whiteBall.Center);  // Projection falls on the segment
-            distance = Vector2.Distance(possibleObstruction.Center, projection);
-            return distance <= 2 * Ball.Radius;
-
+            bool result = Physics.DoesBallCollideWithOtherBall(whiteBall, possibleObstruction, out time, 
+                                whiteBallDirection, Vector2.Zero,500,0);
+            // revert the state of the white ball to the default value
+            //whiteBall.Speed = 0;
+            //whiteBall.Dir = Vector2.Zero;
+            return result;
         }
 
         private Ball GetClosestBallWithoutCollisions(Ball whiteBall, int rangeStart, int rangeEnd)
@@ -65,30 +62,34 @@ namespace BilliardsAI
             float minDistance = float.MaxValue;
             for (int i = rangeStart; i < rangeEnd; i++)
             {
+                Ball ball = pool.Balls[i];
                 if (i == 8)
                 {
                     continue;
                 }
-                if (pool.Balls[i].Inserted)
+                if (ball.Inserted)
                 {
                     continue;
                 }
-                float distanceToWhite = Vector2.Distance(whiteBall.Center, pool.Balls[i].Center);
+                float distanceToWhite = Vector2.Distance(whiteBall.Center, ball.Center);
                 if (minDistance > distanceToWhite &&
-                    !HasCollision(whiteBall, pool.Balls[i], (rangeStart + 8) % 16, (rangeEnd + 8) % 16))
+                    !HasCollision(whiteBall, ball, 0, 16))
+                // these range calculations are not correct for the end interval
+                // range end + 8 = 16 if the range is 1-8 (Solids). This results in search in range 
+                // However, range end + 9 is 25 when the range is 9-16 (Stripes)
                 {
-                    result = pool.Balls[i];
-                    minDistance = distanceToWhite;
+                    Vector2 pocket = GetClosestPocketCenter(ball);
+                    if (pocket.X == -1 && pocket.Y == -1) // the default false value
+                    {
+                        continue;
+                    }
+                    return ball;
                 }
-            }
-            if (result == null)
-            {
-                return base.GetClosestBall();
             }
             return result;
         }
 
-        protected override Ball GetClosestBall()
+        protected override Vector2 GetClosestBallCenter()
         {
             Ball whiteBall = pool.Balls[0];
             Ball result = null;
@@ -98,7 +99,8 @@ namespace BilliardsAI
             }
             if (player.BallTypeChosen == BallType.None)
             {
-                result = ChooseClosestBallFromRange(whiteBall, 1, 16);
+                return base.GetClosestBallCenter();
+                //result = ChooseClosestBallFromRange(whiteBall, 1, 16);
             }
             else if (player.BallTypeChosen == BallType.Solids)
             {
@@ -108,9 +110,11 @@ namespace BilliardsAI
             {
                 result = GetClosestBallWithoutCollisions(whiteBall, 9, 16);
             }
-            //if result == null?
-            return result;
-            //return base.GetClosestBall();
+            if (result == null)
+            {
+                return base.GetClosestBallCenter();
+            }
+            return result.Center;
         }
     }
 }

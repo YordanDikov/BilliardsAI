@@ -50,8 +50,8 @@ namespace BilliardsAI
 
         public virtual Vector2 GetShootingDirection() 
         {
-            Ball target = GetClosestBall();
-            Vector2 result = target.Center - pool.Balls[0].Center;
+            Vector2 targetCenter = GetClosestBallCenter();
+            Vector2 result = targetCenter- pool.Balls[0].Center;
             //float error = CalculateError();
             //error = (float)(2 * Math.PI * error);
             //float newX = (float)(result.X * Math.Cos(error) - result.Y * Math.Sin(error));
@@ -60,7 +60,7 @@ namespace BilliardsAI
             return result;
         }
 
-        protected virtual Ball GetClosestBall()
+        protected virtual Vector2 GetClosestBallCenter()
         {
             Ball whiteBall = pool.Balls[0];
             Ball result = null;
@@ -80,7 +80,7 @@ namespace BilliardsAI
             {
                 result = ChooseClosestBallFromRange(whiteBall, 9, 16);
             }
-            return result;
+            return result.Center;
         }
   
         protected Ball ChooseClosestBallFromRange(Ball whiteBall, int rangeStart, int rangeEnd)

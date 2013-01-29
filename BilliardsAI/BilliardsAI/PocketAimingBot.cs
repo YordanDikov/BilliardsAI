@@ -18,29 +18,8 @@ namespace BilliardsAI
             float cosAngle = Vector2.Dot(a,b) / (a.Length() * b.Length());
             return cosAngle;
         }
-
-        public override Vector2 GetShootingDirection()
-        {
-            //Ball targetBall = GetClosestBall();
-            //Vector2 closestPocketCenter = GetClosestPocketCenter(targetBall);
-            //Vector2 direction = targetBall.Center - closestPocketCenter;
-            //direction.Normalize();
-            //Vector2 realTarget = targetBall.Center + 2 * Ball.Radius * direction;
-            //return realTarget - pool.Balls[0].Center;
-            Vector2 pocketCenter;
-            Ball targetBall = GetTargetBall(out pocketCenter);
-            if (targetBall == null)
-            {
-                targetBall = base.GetClosestBall();
-                return targetBall.Center - pool.Balls[0].Center;
-            }
-            Vector2 pocketToBallDirection = targetBall.Center - pocketCenter;
-            pocketToBallDirection.Normalize();
-            Vector2 whiteCenterTarget = targetBall.Center + 2 * Ball.Radius * pocketToBallDirection;
-            return whiteCenterTarget - pool.Balls[0].Center;
-        }
     
-        private Vector2 GetClosestPocketCenter(Ball ball)
+        protected Vector2 GetClosestPocketCenter(Ball ball)
         {
             Vector2 result = new Vector2(-1,-1);
             float minDistance = Vector2.Distance(ball.Center, result);
@@ -59,7 +38,22 @@ namespace BilliardsAI
             return result;
         }
 
-        private Ball GetTargetBall(out Vector2 pocket)
+        protected override Vector2 GetClosestBallCenter()
+        {
+            Vector2 pocketCenter;
+            Ball targetBall = GetClosestBall(out pocketCenter);
+            if (targetBall == null)
+            {
+                var closestBallCenter = base.GetClosestBallCenter();
+                return closestBallCenter - pool.Balls[0].Center;
+            }
+            Vector2 pocketToBallDirection = targetBall.Center - pocketCenter;
+            pocketToBallDirection.Normalize();
+            Vector2 whiteCenterTarget = targetBall.Center + 2 * Ball.Radius * pocketToBallDirection;
+            return whiteCenterTarget;
+        }
+
+        private Ball GetClosestBall(out Vector2 pocket)
         {
             pocket = new Vector2(-1, -1);
             List<Ball> balls = new List<Ball>(pool.Balls);

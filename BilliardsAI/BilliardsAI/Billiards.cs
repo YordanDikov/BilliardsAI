@@ -42,7 +42,7 @@ namespace BilliardsAI
             this.pool = new Pool(player1,player2);
             this.IsMouseVisible = true;
             this.mouseScrollState = 0;
-            this.bot = new PocketAimingBot(pool, player2);
+            this.bot = new CollisionDetectingBot(pool, player2);
             base.Initialize();
         }
 
