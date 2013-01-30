@@ -264,7 +264,7 @@ namespace BilliardsAI
                 }
                 if (!pool.Balls[i].Inserted)
                 {
-                    DrawBall(pool.Balls[i].Center, ballColor);
+                    DrawBall(pool.Balls[i], ballColor);
                 }
             }
 
@@ -284,13 +284,13 @@ namespace BilliardsAI
             }
         }
 
-        private void DrawBall(Vector2 ballCenter, Color ballColor)
+        private void DrawBall(Ball theBall, Color ballColor)
         {
             spriteBatch.Begin();
-            ballCenter.X -= Ball.Radius;
-            ballCenter.Y -= Ball.Radius;
-
+            Vector2 ballCenter = new Vector2(theBall.Center.X - Ball.Radius, theBall.Center.Y - Ball.Radius);
             spriteBatch.Draw(ball, ballCenter, ballColor);
+            // drawing numbers for debug purposes.
+            //spriteBatch.DrawString(tahoma, theBall.Number.ToString(), ballCenter, Color.Green);
             spriteBatch.End();
         }
 

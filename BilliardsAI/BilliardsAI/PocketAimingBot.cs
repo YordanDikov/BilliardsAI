@@ -29,7 +29,7 @@ namespace BilliardsAI
                 float distanceToWhite = Vector2.Distance(pool.Balls[0].Center, pocket);
 
                 if (currentDistance < minDistance && distanceToWhite > currentDistance &&
-                    GetCosAngle(pool.Balls[0].Center, ball.Center, pocket) < 0)
+                    GetCosAngle(pool.Balls[0].Center, ball.Center, pocket) < -0.4)
                 {
                     result = pocket;
                     minDistance = currentDistance;
@@ -47,6 +47,12 @@ namespace BilliardsAI
                 var closestBallCenter = base.GetClosestBallCenter();
                 return closestBallCenter - pool.Balls[0].Center;
             }
+            Vector2 whiteCenterTarget = GetWhiteBallDesiredPosition(targetBall, pocketCenter);
+            return whiteCenterTarget;
+        }
+  
+        protected Vector2 GetWhiteBallDesiredPosition(Ball targetBall, Vector2 pocketCenter)
+        {
             Vector2 pocketToBallDirection = targetBall.Center - pocketCenter;
             pocketToBallDirection.Normalize();
             Vector2 whiteCenterTarget = targetBall.Center + 2 * Ball.Radius * pocketToBallDirection;
@@ -76,11 +82,15 @@ namespace BilliardsAI
             return null;
         }
   
-        private bool IsPlayersBall(Ball ball)
+        protected bool IsPlayersBall(Ball ball)
         {
             if (player.ShouldPotBlack(pool.Balls))
             {
                 return ball.Number == 8;
+            }
+            if (player.BallTypeChosen == BallType.None)
+            {
+                return ball.Number != 8 && ball.Number != 0;
             }
             if (player.BallTypeChosen == BallType.Solids)
             {
