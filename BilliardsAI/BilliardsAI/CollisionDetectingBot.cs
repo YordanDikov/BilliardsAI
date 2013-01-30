@@ -51,15 +51,17 @@ namespace BilliardsAI
                     continue;
                 }
                 float distanceToWhite = Vector2.Distance(whiteBall.Center, ball.Center);
-                if (minDistance > distanceToWhite && !HasCollision(whiteBall, ball))
+                Vector2 pocket = GetClosestPocketCenter(ball);
+                if (pocket.X == -1 && pocket.Y == -1) // the default false value
                 {
-                    Vector2 pocket = GetClosestPocketCenter(ball);
-                    if (pocket.X == -1 && pocket.Y == -1) // the default false value
-                    {
-                        continue;
-                    }
+                    continue;
+                }
+                Vector2 imaginaryTargetCenter = GetWhiteBallDesiredPosition(ball, pocket);
+                Ball imaginaryBall = new Ball(imaginaryTargetCenter, 100, false);
+                if (minDistance > distanceToWhite && !HasCollision(whiteBall, imaginaryBall))
+                {
                     minDistance = distanceToWhite;
-                    result = GetWhiteBallDesiredPosition(ball, pocket);
+                    result = imaginaryBall.Center;
                 }
             }
             return result;

@@ -46,6 +46,7 @@ namespace BilliardsAI
             {
                 var closestBallCenter = base.GetClosestBallCenter();
                 return closestBallCenter - pool.Balls[0].Center;
+                // if there is no chance to pot in a pocket - aim for the center of the closest ball
             }
             Vector2 whiteCenterTarget = GetWhiteBallDesiredPosition(targetBall, pocketCenter);
             return whiteCenterTarget;
@@ -79,7 +80,7 @@ namespace BilliardsAI
                 }
                 return ball;
             }
-            return null;
+            return null; // If there is no clean shot - return null
         }
   
         protected bool IsPlayersBall(Ball ball)
